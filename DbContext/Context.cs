@@ -7,10 +7,10 @@ namespace Restaurante.API.DbConext
     {
         public Context(DbContextOptions<Context> options) : base(options) { }
 
-        public DbSet<Status> Estado { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Mesa> Mesas { get; set; }
         public DbSet<Produto> Produtos { get; set; }
         public DbSet<RestauranteApp> Restaurantes { get; set; }
+        public DbSet<Pedido> Pedido { get; set; }
     }
 }

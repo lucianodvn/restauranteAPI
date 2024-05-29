@@ -11,8 +11,8 @@ using Restaurante.API.DbConext;
 namespace Restaurante.API.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20240528003052_inicia")]
-    partial class inicia
+    [Migration("20240529041133_Alteracao")]
+    partial class Alteracao
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,31 +28,42 @@ namespace Restaurante.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("IdProduto")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IdStatus")
-                        .HasColumnType("int");
-
                     b.Property<string>("NumeroDaMesa")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("varchar(10)");
 
-                    b.Property<string>("ProdutoConsumido")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
-
-                    b.Property<int>("QuantidaDePessoas")
-                        .HasColumnType("int");
-
-                    b.Property<double>("ValorTotal")
-                        .HasColumnType("double");
+                    b.Property<string>("StatusDaMesa")
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
 
                     b.HasKey("IdMesa");
 
                     b.ToTable("Mesas");
+                });
+
+            modelBuilder.Entity("Restaurante.API.Models.Pedido", b =>
+                {
+                    b.Property<int>("IdPedido")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdMesa")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdProduto")
+                        .HasColumnType("int");
+
+                    b.Property<string>("NomeDoProduto")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("QuantidadeSolicitada")
+                        .HasColumnType("int");
+
+                    b.HasKey("IdPedido");
+
+                    b.ToTable("Pedido");
                 });
 
             modelBuilder.Entity("Restaurante.API.Models.Produto", b =>
@@ -91,34 +102,24 @@ namespace Restaurante.API.Migrations
                     b.Property<DateTime>("DataChegada")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<DateTime>("DataSaida")
+                    b.Property<DateTime?>("DataSaida")
                         .HasColumnType("datetime(6)");
 
                     b.Property<int>("IdMesa")
                         .HasColumnType("int");
 
+                    b.Property<int>("IdPedido")
+                        .HasColumnType("int");
+
                     b.Property<int>("NumeroDoAtendimento")
                         .HasColumnType("int");
+
+                    b.Property<double>("ValorTotal")
+                        .HasColumnType("double");
 
                     b.HasKey("Id");
 
                     b.ToTable("Restaurantes");
-                });
-
-            modelBuilder.Entity("Restaurante.API.Models.Status", b =>
-                {
-                    b.Property<int>("IdStatus")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("TipoDeStatus")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
-
-                    b.HasKey("IdStatus");
-
-                    b.ToTable("Estado");
                 });
 
             modelBuilder.Entity("Restaurante.API.Models.Usuario", b =>

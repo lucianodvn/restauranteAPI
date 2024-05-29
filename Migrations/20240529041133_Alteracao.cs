@@ -7,27 +7,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Restaurante.API.Migrations
 {
     /// <inheritdoc />
-    public partial class inicia : Migration
+    public partial class Alteracao : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterDatabase()
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "Estado",
-                columns: table => new
-                {
-                    IdStatus = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    TipoDeStatus = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Estado", x => x.IdStatus);
-                })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
@@ -38,16 +23,30 @@ namespace Restaurante.API.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     NumeroDaMesa = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    QuantidaDePessoas = table.Column<int>(type: "int", nullable: false),
-                    ProdutoConsumido = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ValorTotal = table.Column<double>(type: "double", nullable: false),
-                    IdProduto = table.Column<int>(type: "int", nullable: false),
-                    IdStatus = table.Column<int>(type: "int", nullable: false)
+                    StatusDaMesa = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Mesas", x => x.IdMesa);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Pedido",
+                columns: table => new
+                {
+                    IdPedido = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    QuantidadeSolicitada = table.Column<int>(type: "int", nullable: false),
+                    NomeDoProduto = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    IdMesa = table.Column<int>(type: "int", nullable: false),
+                    IdProduto = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Pedido", x => x.IdPedido);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -78,8 +77,10 @@ namespace Restaurante.API.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     NumeroDoAtendimento = table.Column<int>(type: "int", nullable: false),
                     DataChegada = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    DataSaida = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    IdMesa = table.Column<int>(type: "int", nullable: false)
+                    DataSaida = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    IdMesa = table.Column<int>(type: "int", nullable: false),
+                    ValorTotal = table.Column<double>(type: "double", nullable: false),
+                    IdPedido = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -116,10 +117,10 @@ namespace Restaurante.API.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Estado");
+                name: "Mesas");
 
             migrationBuilder.DropTable(
-                name: "Mesas");
+                name: "Pedido");
 
             migrationBuilder.DropTable(
                 name: "Produtos");

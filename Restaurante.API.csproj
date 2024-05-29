@@ -32,6 +32,7 @@
     <None Remove="Interface\" />
     <None Remove="Repositories\" />
     <None Remove="Repositories\Interface\" />
+    <None Remove="Enum\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\" />
@@ -40,5 +41,13 @@
     <Folder Include="Interface\" />
     <Folder Include="Repositories\" />
     <Folder Include="Repositories\Interface\" />
+    <Folder Include="Enum\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Models\Status.cs" />
+    <Compile Remove="Migrations\20240529031242_IncitalCreate.cs" />
+    <Compile Remove="Migrations\20240529031242_IncitalCreate.Designer.cs" />
+    <Compile Remove="Migrations\20240529032808_IncitalCreate.cs" />
+    <Compile Remove="Migrations\20240529032808_IncitalCreate.Designer.cs" />
   </ItemGroup>
 </Project>

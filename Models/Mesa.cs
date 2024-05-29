@@ -13,21 +13,8 @@ namespace Restaurante.API.Models
         [StringLength(10)]
         public string? NumeroDaMesa { get; set; }
 
-        [Required]
-        public int QuantidaDePessoas { get; set; }
-
-        [Required]
-        [StringLength(100)]
-        public string? ProdutoConsumido { get; set; }
-
-        [Required]
-        public double ValorTotal { get; set; }
-
-        [ForeignKey("Produto")]
-        public int IdProduto { get; set; }
-
-        [ForeignKey("Status")]
-        public int IdStatus { get; set; }
+        [StringLength(20)]
+        public string? StatusDaMesa { get; set; }
     }
 }
 

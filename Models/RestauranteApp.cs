@@ -15,10 +15,21 @@ namespace Restaurante.API.Models
         [Required]
         public DateTime DataChegada { get; set; }
 
-        public DateTime DataSaida { get; set; }
+        public DateTime? DataSaida { get; set; }
 
         [ForeignKey("Mesa")]
         public int IdMesa { get; set; }
+
+        public double ValorTotal { get; set; }
+
+        [ForeignKey("Pedido")]
+        public int IdPedido { get; set; }
+
+        public void AdicionarPedido(List<int> ids)
+        {
+            List<int> listaDePedido = new List<int>();
+            listaDePedido.AddRange(ids);
+        }
     }
 }
 
