@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using Restaurante.API.DTOs;
 using Restaurante.API.Models;
 using Restaurante.API.Repositories.Interface;
 
@@ -9,16 +11,18 @@ namespace Restaurante.API.Controllers
     public class UsuarioController : ControllerBase
     {
         private readonly IRepository<Usuario> _repository;
+        private readonly IMapper _mapper;
 
-        public UsuarioController(IRepository<Usuario> repository)
+        public UsuarioController(IRepository<Usuario> repository, IMapper mapper)
         {
             _repository = repository;
+            _mapper = mapper;
         }
 
         [HttpGet("consultarusuario/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<Usuario>> ConsultarUsuario(int id)
+        public async Task<ActionResult<UsuarioDTO>> ConsultarUsuario(int id)
         {
             var response = await _repository.Get(u => u.IdUsuario == id);
 
@@ -27,13 +31,15 @@ namespace Restaurante.API.Controllers
                 return NotFound("Usuário não encontrado.");
             }
 
-            return Ok(response);
+            var usuarioDTO = _mapper.Map<UsuarioDTO>(response);
+
+            return Ok(usuarioDTO);
         }
 
-        [HttpGet("consultarusuario")]
+        [HttpGet("consultarusuarios")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<IEnumerable<Usuario>>> ConsultarListaDeUsuario()
+        public async Task<ActionResult<IEnumerable<UsuarioDTO>>> ConsultarListaDeUsuario()
         {
             var response = await _repository.GetAll();
 
@@ -42,12 +48,16 @@ namespace Restaurante.API.Controllers
                 return NotFound("Nenhum usuário encontrado.");
             }
 
-            return Ok(response);
+            var usuariosDTO = _mapper.Map<IEnumerable<UsuarioDTO>>(response);
+
+            return Ok(usuariosDTO);
         }
 
         [HttpPost("cadastrarusuario")]
-        public async Task<ActionResult> CadastroUsuario([FromBody] Usuario usuario)
+        public async Task<ActionResult> CadastroUsuario([FromBody] UsuarioDTO usuarioDto)
         {
+            var usuario = _mapper.Map<Usuario>(usuarioDto);
+
             _repository.Salvar(usuario);
             bool sucesso = await _repository.SalvarAleracoes();
 
@@ -60,8 +70,10 @@ namespace Restaurante.API.Controllers
         }
 
         [HttpPut("alterarusuario")]
-        public async Task<ActionResult> AlterarUsuario(Usuario usuario)
+        public async Task<ActionResult> AlterarUsuario(UsuarioDTO usuarioDto)
         {
+            var usuario = _mapper.Map<Usuario>(usuarioDto);
+
             _repository.Update(usuario);
             bool sucesso = await _repository.SalvarAleracoes();
 

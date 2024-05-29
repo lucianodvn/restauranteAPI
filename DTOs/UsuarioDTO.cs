@@ -1,14 +1,11 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Restaurante.API.Models
+namespace Restaurante.API.DTOs
 {
-    public class Usuario
+    public class UsuarioDTO
     {
-        [Key]
         public int IdUsuario { get; set; }
-
-        public string? Nome { get; set; }
 
         [Required(ErrorMessage = "Usuário requerido.")]
         public string? NomeUsuario { get; set; }
@@ -22,9 +19,6 @@ namespace Restaurante.API.Models
 
         [Required]
         public bool PermissaoCadastrarProduto { get; set; }
-
-        [StringLength(20)]
-        public string? TipoDeFuncionario { get; set; }
     }
 }
 

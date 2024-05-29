@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using Restaurante.API.DTOs;
 using Restaurante.API.Models;
 using Restaurante.API.Repositories.Interface;
 
@@ -9,14 +11,16 @@ namespace Restaurante.API.Controllers
     public class PedidoController : ControllerBase
     {
         private readonly IRepository<Pedido> _repository;
+        private readonly IMapper _mapper;
 
-        public PedidoController(IRepository<Pedido> repository)
+        public PedidoController(IRepository<Pedido> repository, IMapper mapper)
         {
             _repository = repository;
+            _mapper = mapper;
         }
 
         [HttpGet("consultarpedidos")]
-        public async Task<ActionResult<IEnumerable<Pedido>>> ConsultarPedidos()
+        public async Task<ActionResult<IEnumerable<PedidoDTO>>> ConsultarPedidos()
         {
             var response = await _repository.GetAll();
 
@@ -25,11 +29,13 @@ namespace Restaurante.API.Controllers
                 return BadRequest("Nenhum pedido não encontrado.");
             }
 
-            return Ok(response);
+            var pedidosDto = _mapper.Map<IEnumerable<PedidoDTO>>(response);
+
+            return Ok(pedidosDto);
         }
 
         [HttpGet("consultarpedido/id")]
-        public async Task<ActionResult<IEnumerable<Pedido>>> ConsultarPedidos(int id)
+        public async Task<ActionResult<IEnumerable<PedidoDTO>>> ConsultarPedidos(int id)
         {
             var response = await _repository.Get(p => p.IdPedido == id);
 
@@ -38,12 +44,16 @@ namespace Restaurante.API.Controllers
                 return BadRequest("Nenhum pedido não encontrado.");
             }
 
-            return Ok(response);
+            var pedidoDto = _mapper.Map<PedidoDTO>(response);
+
+            return Ok(pedidoDto);
         }
 
         [HttpPost("cadastrarpedido")]
-        public async Task<ActionResult> CadastrarPedido(Pedido pedido)
+        public async Task<ActionResult> CadastrarPedido(PedidoDTO pedidoDto)
         {
+            var pedido = _mapper.Map<Pedido>(pedidoDto);
+
             _repository.Salvar(pedido);
 
             bool sucesso = await _repository.SalvarAleracoes();
@@ -57,8 +67,10 @@ namespace Restaurante.API.Controllers
         }
 
         [HttpPut("alterarpedido")]
-        public async Task<ActionResult> AlterarPedido(Pedido pedido)
+        public async Task<ActionResult> AlterarPedido(PedidoDTO pedidoDto)
         {
+            var pedido = _mapper.Map<Pedido>(pedidoDto);
+
             _repository.Update(pedido);
 
             bool sucesso = await _repository.SalvarAleracoes();
@@ -80,6 +92,8 @@ namespace Restaurante.API.Controllers
             {
                 return BadRequest("Nenhum pedido não encontrado.");
             }
+
+            _repository.Delete(response);
 
             bool sucesso = await _repository.SalvarAleracoes();
 

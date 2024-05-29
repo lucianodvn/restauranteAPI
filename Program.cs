@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Restaurante.API.DbConext;
 using Restaurante.API.Interface;
+using Restaurante.API.Mappings;
 using Restaurante.API.Models;
 using Restaurante.API.Repositories;
 using Restaurante.API.Repositories.Interface;
@@ -18,6 +19,8 @@ builder.Services.AddControllers()
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddAutoMapper(typeof(EntitiesToDTOPappingProfile));
 
 
 string mysqlConnection = builder.Configuration.GetConnectionString("DefaultConnection");

@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Restaurante.API.DTOs;
 using Restaurante.API.Models;
 using Restaurante.API.Repositories.Interface;
 
@@ -15,14 +17,16 @@ namespace Restaurante.API.Controllers
     public class AtendimentoController : Controller
     {
         private readonly IRepository<RestauranteApp> _repository;
+        private readonly IMapper _mapper;
 
-        public AtendimentoController(IRepository<RestauranteApp> repository)
+        public AtendimentoController(IRepository<RestauranteApp> repository, IMapper mapper)
         {
             _repository = repository;
+            _mapper = mapper;
         }
 
         [HttpGet("consultaratendimentos")]
-        public async Task<ActionResult> ConsultarAtendimento()
+        public async Task<ActionResult<IEnumerable<AtendimentoDTO>>> ConsultarAtendimento()
         {
             var response = await _repository.GetAll();
 
@@ -31,7 +35,9 @@ namespace Restaurante.API.Controllers
                 return BadRequest("Não há nenhum atendimento.");
             }
 
-            return Ok(response);
+            var atendimentosDto = _mapper.Map<IEnumerable<AtendimentoDTO>>(response);
+
+            return Ok(atendimentosDto);
         }
 
         [HttpGet("consultaratendimento/id")]
@@ -44,12 +50,16 @@ namespace Restaurante.API.Controllers
                 return BadRequest("Atendimento não encontrado.");
             }
 
+            var atendimentosDto = _mapper.Map<AtendimentoDTO>(response);
+
             return Ok(response);
         }
 
         [HttpPost("cadastraratendimento")]
-        public async Task<ActionResult> CadastrarAtendimento(RestauranteApp restauranteApp)
+        public async Task<ActionResult> CadastrarAtendimento(AtendimentoDTO atendimentoDto)
         {
+            var restauranteApp = _mapper.Map<RestauranteApp>(atendimentoDto);
+
             _repository.Salvar(restauranteApp);
 
             bool sucesso = await _repository.SalvarAleracoes();
@@ -63,8 +73,10 @@ namespace Restaurante.API.Controllers
         }
 
         [HttpPut("alteraratendimento")]
-        public async Task<ActionResult> AlterarAtendimento(RestauranteApp restauranteApp)
+        public async Task<ActionResult> AlterarAtendimento(AtendimentoDTO atendimentoDto)
         {
+            var restauranteApp = _mapper.Map<RestauranteApp>(atendimentoDto);
+
             _repository.Update(restauranteApp);
 
             bool sucesso = await _repository.SalvarAleracoes();

@@ -23,6 +23,8 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+    <PackageReference Include="AutoMapper" Version="12.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,6 +35,8 @@
     <None Remove="Repositories\" />
     <None Remove="Repositories\Interface\" />
     <None Remove="Enum\" />
+    <None Remove="DTOs\" />
+    <None Remove="Mappings\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\" />
@@ -42,6 +46,8 @@
     <Folder Include="Repositories\" />
     <Folder Include="Repositories\Interface\" />
     <Folder Include="Enum\" />
+    <Folder Include="DTOs\" />
+    <Folder Include="Mappings\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Models\Status.cs" />

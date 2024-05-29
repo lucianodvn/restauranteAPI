@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using Restaurante.API.DTOs;
 using Restaurante.API.Models;
 using Restaurante.API.Repositories.Interface;
 
@@ -9,14 +11,16 @@ namespace Restaurante.API.Controllers
     public class ProdutoController : ControllerBase
     {
         private readonly IRepository<Produto> _repository;
+        private readonly IMapper _mapper;
 
-        public ProdutoController(IRepository<Produto> repository)
+        public ProdutoController(IRepository<Produto> repository, IMapper mapper)
         {
             _repository = repository;
+            _mapper = mapper;
         }
 
         [HttpGet("consultarpodutos")]
-        public async Task<ActionResult<IEnumerable<Produto>>> ConsultarProdutos()
+        public async Task<ActionResult<IEnumerable<ProdutoDTO>>> ConsultarProdutos()
         {
             var response = await _repository.GetAll();
             if (response is null)
@@ -24,7 +28,9 @@ namespace Restaurante.API.Controllers
                 return BadRequest("Nenhum produto encontrado.");
             }
 
-            return Ok(response);
+            var produtosDto = _mapper.Map<IEnumerable<ProdutoDTO>>(response);
+
+            return Ok(produtosDto);
         }
 
         [HttpGet("consultarproduto/id")]
@@ -37,12 +43,16 @@ namespace Restaurante.API.Controllers
                 return BadRequest("Nenhum produto encontrado.");
             }
 
-            return Ok(response);
+            var produtoDto = _mapper.Map<ProdutoDTO>(response);
+
+            return Ok(produtoDto);
         }
 
         [HttpPost("cadastrarproduto")]
-        public async Task<ActionResult> CadastrarProduto(Produto produto)
+        public async Task<ActionResult> CadastrarProduto(ProdutoDTO produtoDto)
         {
+            var produto = _mapper.Map<Produto>(produtoDto);
+
             _repository.Salvar(produto);
             bool sucesso = await _repository.SalvarAleracoes();
 
@@ -55,8 +65,10 @@ namespace Restaurante.API.Controllers
         }
 
         [HttpPut("alterarproduto")]
-        public async Task<ActionResult> AlterarProduto(Produto produto)
+        public async Task<ActionResult> AlterarProduto(ProdutoDTO produtoDto)
         {
+            var produto = _mapper.Map<Produto>(produtoDto);
+
             _repository.Update(produto);
 
             bool sucesso = await _repository.SalvarAleracoes();
