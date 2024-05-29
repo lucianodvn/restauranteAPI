@@ -1,15 +1,34 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+﻿using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
+using Restaurante.API.DbConext;
+using Restaurante.API.Interface;
+using Restaurante.API.Models;
+using Restaurante.API.Repositories;
+using Restaurante.API.Repositories.Interface;
 
-// Add services to the container.
+var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    options.JsonSerializerOptions
+    .ReferenceHandler = ReferenceHandler.IgnoreCycles)
+    .AddNewtonsoftJson();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+string mysqlConnection = builder.Configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddDbContext<Context>(options =>
+    options.UseMySql(mysqlConnection, ServerVersion.AutoDetect(mysqlConnection)));
+
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
