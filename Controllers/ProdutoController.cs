@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Restaurante.API.DTOs;
-using Restaurante.API.Models;
-using Restaurante.API.Repositories.Interface;
+using Restaurante.Application.Interfaces;
+using Restaurante.Domain.DTOs;
+using Restaurante.Domain.Entities;
+using Restaurante.Domain.Interfaces;
 
 namespace Restaurante.API.Controllers
 {
@@ -10,42 +11,38 @@ namespace Restaurante.API.Controllers
     [Route("controller")]
     public class ProdutoController : ControllerBase
     {
-        private readonly IRepository<Produto> _repository;
+        private readonly IServiceGenerico<Produto> _service;
         private readonly IMapper _mapper;
 
-        public ProdutoController(IRepository<Produto> repository, IMapper mapper)
+        public ProdutoController(IServiceGenerico<Produto> service, IMapper mapper)
         {
-            _repository = repository;
+            _service = service;
             _mapper = mapper;
         }
 
         [HttpGet("consultarpodutos")]
         public async Task<ActionResult<IEnumerable<ProdutoDTO>>> ConsultarProdutos()
         {
-            var response = await _repository.GetAll();
+            var response = await _service.GetAll();
             if (response is null)
             {
                 return BadRequest("Nenhum produto encontrado.");
             }
 
-            var produtosDto = _mapper.Map<IEnumerable<ProdutoDTO>>(response);
-
-            return Ok(produtosDto);
+            return Ok(response);
         }
 
         [HttpGet("consultarproduto/id")]
         public async Task<ActionResult<Produto>> ConsultarProduto(int id)
         {
-            var response = await _repository.Get(p => p.IdProduto == id);
+            var response = await _service.Get(p => p.IdProduto == id);
 
             if (response is null)
             {
                 return BadRequest("Nenhum produto encontrado.");
             }
 
-            var produtoDto = _mapper.Map<ProdutoDTO>(response);
-
-            return Ok(produtoDto);
+            return Ok(response);
         }
 
         [HttpPost("cadastrarproduto")]
@@ -53,15 +50,10 @@ namespace Restaurante.API.Controllers
         {
             var produto = _mapper.Map<Produto>(produtoDto);
 
-            _repository.Salvar(produto);
-            bool sucesso = await _repository.SalvarAleracoes();
+            _service.Salvar(produto);
 
-            if (!sucesso)
-            {
-                return BadRequest("Erro ao salvar produto.");
-            }
 
-            return Ok("Produto cadastrado com sucesso.");
+            return Ok($"Produto cadastrado com sucesso./n {produto}");
         }
 
         [HttpPut("alterarproduto")]
@@ -69,37 +61,24 @@ namespace Restaurante.API.Controllers
         {
             var produto = _mapper.Map<Produto>(produtoDto);
 
-            _repository.Update(produto);
+            _service.Update(produto);
 
-            bool sucesso = await _repository.SalvarAleracoes();
-
-            if (!sucesso)
-            {
-                return BadRequest("Erro ao alterar produto.");
-            }
-
-            return Ok("Produto alterado com sucesso.");
+            return Ok($"Produto alterado com sucesso. /n {produto}");
         }
 
         [HttpDelete("deletarproduto/id")]
         public async Task<ActionResult> ExcluirProduto(int id)
         {
-            var response = await _repository.Get(p => p.IdProduto == id);
+            var response = await _service.Get(p => p.IdProduto == id);
 
             if (response is null)
             {
                 return BadRequest("Produto não encontrado.");
             }
 
-            _repository.Delete(response);
-            bool sucesso = await _repository.SalvarAleracoes();
+            _service.Delete(response);
 
-            if (!sucesso)
-            {
-                return BadRequest("Erro ao excluir produto.");
-            }
-
-            return Ok("Produto excluído com sucesso.");
+            return Ok($"Produto excluído com sucesso. /n {response}");
         }
     }
 }

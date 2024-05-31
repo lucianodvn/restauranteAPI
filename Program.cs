@@ -1,11 +1,11 @@
 ﻿using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
-using Restaurante.API.DbConext;
-using Restaurante.API.Interface;
-using Restaurante.API.Mappings;
-using Restaurante.API.Models;
-using Restaurante.API.Repositories;
-using Restaurante.API.Repositories.Interface;
+using Restaurante.Application.Interfaces;
+using Restaurante.Application.Mappings;
+using Restaurante.Application.Services;
+using Restaurante.Domain.Interfaces;
+using Restaurante.Infra.Data;
+using Restaurante.Infra.Data.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,13 +22,13 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddAutoMapper(typeof(EntitiesToDTOPappingProfile));
 
-
 string mysqlConnection = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<Context>(options =>
     options.UseMySql(mysqlConnection, ServerVersion.AutoDetect(mysqlConnection)));
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped(typeof(IServiceGenerico<>), typeof(ServiceGenerico<>));
 
 var app = builder.Build();
 

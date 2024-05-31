@@ -12,42 +12,16 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.18" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.18" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.18">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.18" />
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="7.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.18">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
-    <PackageReference Include="AutoMapper" Version="12.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <None Remove="Controllers\" />
-    <None Remove="Models\" />
-    <None Remove="DbContext\" />
-    <None Remove="Interface\" />
-    <None Remove="Repositories\" />
-    <None Remove="Repositories\Interface\" />
     <None Remove="Enum\" />
-    <None Remove="DTOs\" />
-    <None Remove="Mappings\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\" />
-    <Folder Include="Models\" />
-    <Folder Include="DbContext\" />
-    <Folder Include="Interface\" />
-    <Folder Include="Repositories\" />
-    <Folder Include="Repositories\Interface\" />
     <Folder Include="Enum\" />
-    <Folder Include="DTOs\" />
-    <Folder Include="Mappings\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Models\Status.cs" />
@@ -55,5 +29,10 @@
     <Compile Remove="Migrations\20240529031242_IncitalCreate.Designer.cs" />
     <Compile Remove="Migrations\20240529032808_IncitalCreate.cs" />
     <Compile Remove="Migrations\20240529032808_IncitalCreate.Designer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Restaurante.Infra.Ioc\Restaurante.Infra.Ioc.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
   </ItemGroup>
 </Project>

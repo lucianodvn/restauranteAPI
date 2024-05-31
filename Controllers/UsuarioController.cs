@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Restaurante.API.DTOs;
-using Restaurante.API.Models;
-using Restaurante.API.Repositories.Interface;
+using Restaurante.Application.Interfaces;
+using Restaurante.Domain.DTOs;
+using Restaurante.Domain.Entities;
+using Restaurante.Domain.Interfaces;
 
 namespace Restaurante.API.Controllers
 {
@@ -10,12 +11,12 @@ namespace Restaurante.API.Controllers
     [ApiController]
     public class UsuarioController : ControllerBase
     {
-        private readonly IRepository<Usuario> _repository;
+        private readonly IServiceGenerico<Usuario> _service;
         private readonly IMapper _mapper;
 
-        public UsuarioController(IRepository<Usuario> repository, IMapper mapper)
+        public UsuarioController(IServiceGenerico<Usuario> service, IMapper mapper)
         {
-            _repository = repository;
+            _service = service;
             _mapper = mapper;
         }
 
@@ -24,16 +25,14 @@ namespace Restaurante.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<UsuarioDTO>> ConsultarUsuario(int id)
         {
-            var response = await _repository.Get(u => u.IdUsuario == id);
+            var response = await _service.Get(u => u.IdUsuario == id);
 
             if (response is null)
             {
                 return NotFound("Usuário não encontrado.");
             }
 
-            var usuarioDTO = _mapper.Map<UsuarioDTO>(response);
-
-            return Ok(usuarioDTO);
+            return Ok(response);
         }
 
         [HttpGet("consultarusuarios")]
@@ -41,16 +40,14 @@ namespace Restaurante.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<UsuarioDTO>>> ConsultarListaDeUsuario()
         {
-            var response = await _repository.GetAll();
+            var response = await _service.GetAll();
 
             if (response is null)
             {
                 return NotFound("Nenhum usuário encontrado.");
             }
 
-            var usuariosDTO = _mapper.Map<IEnumerable<UsuarioDTO>>(response);
-
-            return Ok(usuariosDTO);
+            return Ok(response);
         }
 
         [HttpPost("cadastrarusuario")]
@@ -58,13 +55,7 @@ namespace Restaurante.API.Controllers
         {
             var usuario = _mapper.Map<Usuario>(usuarioDto);
 
-            _repository.Salvar(usuario);
-            bool sucesso = await _repository.SalvarAleracoes();
-
-            if (!sucesso)
-            {
-                return BadRequest("Erro ao salvar usuário.");
-            }
+            await _service.Salvar(usuario);
 
             return Ok($"{200}: Usuário cadastrado com sucesso.");
         }
@@ -74,13 +65,7 @@ namespace Restaurante.API.Controllers
         {
             var usuario = _mapper.Map<Usuario>(usuarioDto);
 
-            _repository.Update(usuario);
-            bool sucesso = await _repository.SalvarAleracoes();
-
-            if (!sucesso)
-            {
-                return BadRequest("Erro ao alterar usuário.");
-            }
+            await _service.Update(usuario);
 
             return Ok($"{200}: Usuário alterado com sucesso.");
         }
@@ -88,20 +73,14 @@ namespace Restaurante.API.Controllers
         [HttpDelete("deleltarusuario/id")]
         public async Task<ActionResult> DeletarUsuario(int id)
         {
-            var response = await _repository.Get(u => u.IdUsuario == id);
+            var response = await _service.Get(u => u.IdUsuario == id);
 
             if (response is null)
             {
                 return BadRequest("Usuário não encontrado.");
             }
 
-            _repository.Delete(response);
-            bool sucesso = await _repository.SalvarAleracoes();
-
-            if (!sucesso)
-            {
-                return BadRequest("Erro ao excluir usuário.");
-            }
+            _service.Delete(response);
 
             return Ok($"{200}: Usuário excluído com sucesso.");
         }

@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Restaurante.API.DTOs;
-using Restaurante.API.Models;
-using Restaurante.API.Repositories;
-using Restaurante.API.Repositories.Interface;
+using Restaurante.Application.Interfaces;
+using Restaurante.Domain.DTOs;
+using Restaurante.Domain.Entities;
+using Restaurante.Domain.Interfaces;
 
 namespace Restaurante.API.Controllers
 {
@@ -11,43 +11,39 @@ namespace Restaurante.API.Controllers
     [Route("controller")]
     public class MesaController : Controller
     {
-        private readonly IRepository<Mesa> _repositiry;
+        private readonly IServiceGenerico<Mesa> _service;
         private readonly IMapper _mapper;
 
-        public MesaController(IRepository<Mesa> repositiry, IMapper mapper)
+        public MesaController(IServiceGenerico<Mesa> service, IMapper mapper)
         {
-            _repositiry = repositiry;
+            _service = service;
             _mapper = mapper;
         }
 
         [HttpGet("consutarmesas")]
         public async Task<ActionResult<IEnumerable<MesaDTO>>> ConsultarMesas()
         {
-            var response = await _repositiry.GetAll();
+            var response = await _service.GetAll();
 
             if (response is null || !response.Any())
             {
                 return BadRequest("Mesa não encontrada.");
             }
 
-            var mesaDTO = _mapper.Map<IEnumerable<MesaDTO>>(response);
-
-            return Ok(mesaDTO);
+            return Ok(response);
         }
 
         [HttpGet("consultarmesa/id")]
         public async Task<ActionResult<MesaDTO>> ConsutarMesa(int id)
         {
-            var response = await _repositiry.Get(m => m.IdMesa == id);
+            var response = await _service.Get(m => m.IdMesa == id);
 
             if (response is null)
             {
                 return BadRequest("Mesa não encontrada.");
             }
 
-            var mesaDTO = _mapper.Map<MesaDTO>(response);
-
-            return Ok(mesaDTO);
+            return Ok(response);
         }
 
         [HttpPost("cadastrarmesa")]
@@ -55,15 +51,9 @@ namespace Restaurante.API.Controllers
         {
             var mesa = _mapper.Map<Mesa>(mesaDto);
 
-            _repositiry.Salvar(mesa);
-            bool sucesso = await _repositiry.SalvarAleracoes();
+            _service.Salvar(mesa);
 
-            if (!sucesso)
-            {
-                return BadRequest("Erro cadastrar mesa.");
-            }
-
-            return Ok("Mesa cadastrada com sucesso");
+            return Ok($"Mesa cadastrada com sucesso. /n {mesa}");
         }
 
         [HttpPut("alterarmesa")]
@@ -71,37 +61,24 @@ namespace Restaurante.API.Controllers
         {
             var mesa = _mapper.Map<Mesa>(mesaDto);
 
-            _repositiry.Update(mesa);
+            _service.Update(mesa);
 
-            bool sucesso = await _repositiry.SalvarAleracoes();
-
-            if (!sucesso)
-            {
-                return BadRequest("Erro cadastrar mesa.");
-            }
-
-            return Ok("Mesa cadastrada com sucesso.");
+            return Ok($"Mesa cadastrada com sucesso. /n {mesa}");
         }
 
         [HttpDelete("deletarmesa/id")]
         public async Task<ActionResult> ExcluirMesa(int id)
         {
-            var response = await _repositiry.Get(m => m.IdMesa == id);
+            var response = await _service.Get(m => m.IdMesa == id);
 
             if (response is null)
             {
                 return BadRequest("Mesa não encontrada.");
             }
 
-            _repositiry.Delete(response);
-            bool sucesso = await _repositiry.SalvarAleracoes();
+            _service.Delete(response);
 
-            if (!sucesso)
-            {
-                return BadRequest("Erro excluir mesa.");
-            }
-
-            return Ok("Mesa excluída com sucesso.");
+            return Ok($"Mesa excluída com sucesso. /n {response}");
         }
     }
 }

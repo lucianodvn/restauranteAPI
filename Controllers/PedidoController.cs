@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Restaurante.API.DTOs;
-using Restaurante.API.Models;
-using Restaurante.API.Repositories.Interface;
+using Restaurante.Application.Interfaces;
+using Restaurante.Domain.DTOs;
+using Restaurante.Domain.Entities;
+using Restaurante.Domain.Interfaces;
 
 namespace Restaurante.API.Controllers
 {
@@ -10,43 +11,39 @@ namespace Restaurante.API.Controllers
     [Route("controller")]
     public class PedidoController : ControllerBase
     {
-        private readonly IRepository<Pedido> _repository;
+        private readonly IServiceGenerico<Pedido> _service;
         private readonly IMapper _mapper;
 
-        public PedidoController(IRepository<Pedido> repository, IMapper mapper)
+        public PedidoController(IServiceGenerico<Pedido> service, IMapper mapper)
         {
-            _repository = repository;
+            _service = service;
             _mapper = mapper;
         }
 
         [HttpGet("consultarpedidos")]
         public async Task<ActionResult<IEnumerable<PedidoDTO>>> ConsultarPedidos()
         {
-            var response = await _repository.GetAll();
+            var response = await _service.GetAll();
 
             if (response is null)
             {
                 return BadRequest("Nenhum pedido não encontrado.");
             }
 
-            var pedidosDto = _mapper.Map<IEnumerable<PedidoDTO>>(response);
-
-            return Ok(pedidosDto);
+            return Ok(response);
         }
 
         [HttpGet("consultarpedido/id")]
         public async Task<ActionResult<IEnumerable<PedidoDTO>>> ConsultarPedidos(int id)
         {
-            var response = await _repository.Get(p => p.IdPedido == id);
+            var response = await _service.Get(p => p.IdPedido == id);
 
             if (response is null)
             {
                 return BadRequest("Nenhum pedido não encontrado.");
             }
 
-            var pedidoDto = _mapper.Map<PedidoDTO>(response);
-
-            return Ok(pedidoDto);
+            return Ok(response);
         }
 
         [HttpPost("cadastrarpedido")]
@@ -54,16 +51,9 @@ namespace Restaurante.API.Controllers
         {
             var pedido = _mapper.Map<Pedido>(pedidoDto);
 
-            _repository.Salvar(pedido);
+            await _service.Salvar(pedido);
 
-            bool sucesso = await _repository.SalvarAleracoes();
-
-            if (!sucesso)
-            {
-                return BadRequest("Erro ao salvar pedido.");
-            }
-
-            return Ok("Pedido salvo com sucesso.");
+            return Ok($"Pedido salvo com sucesso. /n {pedido}");
         }
 
         [HttpPut("alterarpedido")]
@@ -71,38 +61,24 @@ namespace Restaurante.API.Controllers
         {
             var pedido = _mapper.Map<Pedido>(pedidoDto);
 
-            _repository.Update(pedido);
+            await _service.Update(pedido);
 
-            bool sucesso = await _repository.SalvarAleracoes();
-
-            if (!sucesso)
-            {
-                return BadRequest("Erro ao alterar pedido.");
-            }
-
-            return Ok("Pedido alterado com sucesso.");
+            return Ok($"Pedido alterado com sucesso. /n {pedido}");
         }
 
         [HttpDelete("deletarpedido/id")]
         public async Task<ActionResult> ExcluirPedido(int id)
         {
-            var response = await _repository.Get(p => p.IdPedido == id);
+            var response = await _service.Get(p => p.IdPedido == id);
 
             if (response is null)
             {
                 return BadRequest("Nenhum pedido não encontrado.");
             }
 
-            _repository.Delete(response);
+            _service.Delete(response);
 
-            bool sucesso = await _repository.SalvarAleracoes();
-
-            if (!sucesso)
-            {
-                return BadRequest("Erro ao excluir pedido.");
-            }
-
-            return Ok("Pedido excluído com sucesso.");
+            return Ok($"Pedido excluído com sucesso. /n {response}");
         }
     }
 }
